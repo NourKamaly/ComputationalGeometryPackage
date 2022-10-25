@@ -25,7 +25,7 @@ namespace CGAlgorithms.Algorithms.ConvexHull
                                 if (HelperMethods.PointInTriangle(points[comparedPoint], points[pointA], points[pointB], points[pointC])!= Enums.PointInPolygon.Outside)
                                 {
                                     points.Remove(points[comparedPoint]);
-                                    updateIndices(ref pointA,ref pointB, ref pointC, comparedPoint);
+                                    HelperMethods.updateIndices(ref pointA,ref pointB, ref pointC, comparedPoint);
                                 }
                             }
                         }
@@ -34,22 +34,6 @@ namespace CGAlgorithms.Algorithms.ConvexHull
             }
             outPoints = points;
 
-        }
-        private void updateIndices(ref int indexA,ref int indexB,ref int indexC,int indexOfRemovedPoint)
-        {
-            if (indexA > indexOfRemovedPoint)
-            {
-                indexA--;
-            }
-            if (indexB > indexOfRemovedPoint)
-            {
-                indexB--;
-            }
-            if(indexC > indexOfRemovedPoint)
-            {
-                indexC--;
-            }
-            
         }
         public override string ToString()
         {
