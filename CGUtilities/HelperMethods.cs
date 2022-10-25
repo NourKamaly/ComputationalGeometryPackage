@@ -37,6 +37,7 @@ namespace CGUtilities
                 return Enums.PointInPolygon.Inside;
             return Enums.PointInPolygon.Outside;
         }
+       
         public static void updateIndices(ref int indexA, ref int indexB, ref int indexC, int indexOfRemovedPoint)
         {
             if (indexA > indexOfRemovedPoint)
@@ -53,6 +54,7 @@ namespace CGUtilities
             }
 
         }
+
         public static Enums.TurnType CheckTurn(Point vector1, Point vector2)
         {
             double result = CrossProduct(vector1, vector2);
