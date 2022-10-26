@@ -9,38 +9,46 @@ namespace CGAlgorithms.Algorithms.ConvexHull
 {
     public class ExtremeSegments : Algorithm
     {
-        private int pointA, pointB,comparedPoint,leftAndRightRotation,colinear;
+        private int pointA, pointB,comparedPoint,leftAndRightRotation=0,colinear=0;
         Line ab;
         public override void Run(List<Point> points, List<Line> lines, List<Polygon> polygons, ref List<Point> outPoints, ref List<Line> outLines, ref List<Polygon> outPolygons)
         {
-            var extremePoints = new HashSet<Point>();
-            for (pointA=0;pointA<points.Count; pointA++)
+            if (points.Count == 1)
             {
-                for (pointB=pointA+1;pointB<points.Count; pointB++)
+                outPoints = points;
+            }
+            else
+            {
+               // outPoints = new List<Point>();
+                for (pointA = 0; pointA < points.Count; pointA++)
                 {
-                    ab = new Line(points[pointA],points[pointB]);
-                    leftAndRightRotation = 0;
-                    colinear = 0;
-                    for (comparedPoint=0;comparedPoint<points.Count; comparedPoint++)
+                    for (pointB = pointA + 1; pointB < points.Count; pointB++)
                     {
-                        if (points[comparedPoint]!=points[pointA] && points[comparedPoint] != points[pointB])
+                        ab = new Line(points[pointA], points[pointB]);
+                        for (comparedPoint = 0; comparedPoint < points.Count; comparedPoint++)
                         {
-                            switch (HelperMethods.CheckTurn(ab, points[comparedPoint]))
+                            if (points[comparedPoint] != points[pointA] && points[comparedPoint] != points[pointB])
                             {
-                                case Enums.TurnType.Left: leftAndRightRotation--; break;
-                                case Enums.TurnType.Right: leftAndRightRotation++; break;
-                                default:colinear++; break;
+                                switch (HelperMethods.CheckTurn(ab, points[comparedPoint]))
+                                {
+                                    case Enums.TurnType.Left: leftAndRightRotation--; break;
+                                    case Enums.TurnType.Right: leftAndRightRotation++; break;
+                                    default: colinear++; break;
+                                }
                             }
                         }
-                    }
-                    if (Math.Abs(leftAndRightRotation) == (points.Count - 2 - colinear))
-                    {
-                        extremePoints.Add(points[pointA]);
-                        extremePoints.Add(points[pointB]);
+                        if (Math.Abs(leftAndRightRotation) == (points.Count - 2 - colinear))
+                        {
+                            outPoints.Add(points[pointA]);
+                            outPoints.Add(points[pointB]);
+                        }
+                        leftAndRightRotation = 0;
+                        colinear = 0;
                     }
                 }
+                HashSet<Point> extremePoints = new HashSet<Point>(outPoints);
+                outPoints = extremePoints.ToList();
             }
-            outPoints = extremePoints.ToList();
         }
 
         public override string ToString()
