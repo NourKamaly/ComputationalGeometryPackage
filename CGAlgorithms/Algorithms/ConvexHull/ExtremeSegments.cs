@@ -9,8 +9,6 @@ namespace CGAlgorithms.Algorithms.ConvexHull
 {
     public class ExtremeSegments : Algorithm
     {
-        private int pointA, pointB,comparedPoint,leftAndRightRotation=0,colinear=0;
-        Line ab;
         public override void Run(List<Point> points, List<Line> lines, List<Polygon> polygons, ref List<Point> outPoints, ref List<Line> outLines, ref List<Polygon> outPolygons)
         {
             if (points.Count == 1)
@@ -19,7 +17,9 @@ namespace CGAlgorithms.Algorithms.ConvexHull
             }
             else
             {
-               // outPoints = new List<Point>();
+                int pointA, pointB, comparedPoint, leftAndRightRotation = 0, colinear=0;
+                Line ab;
+                List<Point> toBeRemovedPoints = new List<Point>();
                 for (pointA = 0; pointA < points.Count; pointA++)
                 {
                     for (pointB = pointA + 1; pointB < points.Count; pointB++)
@@ -33,24 +33,38 @@ namespace CGAlgorithms.Algorithms.ConvexHull
                                 {
                                     case Enums.TurnType.Left: leftAndRightRotation--; break;
                                     case Enums.TurnType.Right: leftAndRightRotation++; break;
-                                    default: colinear++; break;
+                                    default:
+                                        colinear++;
+                                        if (HelperMethods.PointOnSegment(points[comparedPoint], points[pointA], points[pointB]))
+                                        {
+                                            toBeRemovedPoints.Add(points[comparedPoint]);
+                                        }
+                                        break;
                                 }
                             }
                         }
                         if (Math.Abs(leftAndRightRotation) == (points.Count - 2 - colinear))
                         {
-                            outPoints.Add(points[pointA]);
-                            outPoints.Add(points[pointB]);
+                            if (!outPoints.Contains(points[pointA]))
+                            {
+                                outPoints.Add(points[pointA]);
+                            }
+                            if (!outPoints.Contains(points[pointB]))
+                            {
+                                outPoints.Add(points[pointB]);
+                            }
                         }
                         leftAndRightRotation = 0;
                         colinear = 0;
                     }
                 }
-                HashSet<Point> extremePoints = new HashSet<Point>(outPoints);
-                outPoints = extremePoints.ToList();
+                for (int size = 0; size < toBeRemovedPoints.Count; size++)
+                {
+                    outPoints.Remove(toBeRemovedPoints[size]);
+                }
             }
         }
-
+        
         public override string ToString()
         {
             return "Convex Hull - Extreme Segments";
