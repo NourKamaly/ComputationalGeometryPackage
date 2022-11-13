@@ -37,24 +37,6 @@ namespace CGUtilities
                 return Enums.PointInPolygon.Inside;
             return Enums.PointInPolygon.Outside;
         }
-       
-        public static void updateIndices(ref int indexA, ref int indexB, ref int indexC, int indexOfRemovedPoint)
-        {
-            if (indexA > indexOfRemovedPoint)
-            {
-                indexA--;
-            }
-            if (indexB > indexOfRemovedPoint)
-            {
-                indexB--;
-            }
-            if (indexC > indexOfRemovedPoint)
-            {
-                indexC--;
-            }
-
-        }
-
         public static Enums.TurnType CheckTurn(Point vector1, Point vector2)
         {
             double result = CrossProduct(vector1, vector2);
@@ -68,6 +50,7 @@ namespace CGUtilities
         }
         public static bool PointOnRay(Point p, Point a, Point b)
         {
+
             if (a.Equals(b)) return true;
             if (a.Equals(p)) return true;
             var q = a.Vector(p).Normalize();
@@ -103,6 +86,38 @@ namespace CGUtilities
         public static Point GetVector(Line l)
         {
             return l.Start.Vector(l.End);
+        }
+
+        public static void updateIndices(ref int indexA, ref int indexB, ref int indexC, int indexOfRemovedPoint)
+        {
+            if (indexA > indexOfRemovedPoint)
+            {
+                indexA--;
+            }
+            if (indexB > indexOfRemovedPoint)
+            {
+                indexB--;
+            }
+            if (indexC > indexOfRemovedPoint)
+            {
+                indexC--;
+            }
+
+        }
+        public static void removeDuplicatePoints(ref List<Point>inputPoints)
+        {
+            for (int pointA = 0 ; pointA < inputPoints.Count; pointA++)
+            {
+                for (int pointB = pointA+1 ; pointB < inputPoints.Count; pointB++)
+                {
+                    if (inputPoints[pointA].Equals(inputPoints[pointB]))
+                    {
+                        inputPoints.RemoveAt(pointB);
+                        pointB--;
+                        break;
+                    }
+                }
+            }
         }
     }
 }
