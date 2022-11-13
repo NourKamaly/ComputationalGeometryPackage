@@ -11,15 +11,17 @@ namespace CGAlgorithms.Algorithms.ConvexHull
     {
         public override void Run(List<Point> points, List<Line> lines, List<Polygon> polygons, ref List<Point> outPoints, ref List<Line> outLines, ref List<Polygon> outPolygons)
         {
-            if (points.Count == 1)
+            if (points.Count <=3)
             {
                 outPoints = points;
             }
             else
             {
                 int pointA, pointB, comparedPoint, leftAndRightRotation = 0, colinear=0;
+                HelperMethods.removeDuplicatePoints(ref points);
                 Line ab;
                 List<Point> toBeRemovedPoints = new List<Point>();
+                HashSet<Point> output = new HashSet<Point>();
                 for (pointA = 0; pointA < points.Count; pointA++)
                 {
                     for (pointB = pointA + 1; pointB < points.Count; pointB++)
@@ -35,33 +37,30 @@ namespace CGAlgorithms.Algorithms.ConvexHull
                                     case Enums.TurnType.Right: leftAndRightRotation++; break;
                                     default:
                                         colinear++;
-                                        if (HelperMethods.PointOnSegment(points[comparedPoint], points[pointA], points[pointB]))
+                                       
+                                        if (HelperMethods.PointOnSegment(points[comparedPoint],points[pointA], points[pointB]))
                                         {
-                                            toBeRemovedPoints.Add(points[comparedPoint]);
+                                           toBeRemovedPoints.Add(points[comparedPoint]);
                                         }
+                                        
                                         break;
                                 }
                             }
                         }
-                        if (Math.Abs(leftAndRightRotation) == (points.Count - 2 - colinear))
+                        if (Math.Abs(leftAndRightRotation) == (points.Count - 2-colinear))
                         {
-                            if (!outPoints.Contains(points[pointA]))
-                            {
-                                outPoints.Add(points[pointA]);
-                            }
-                            if (!outPoints.Contains(points[pointB]))
-                            {
-                                outPoints.Add(points[pointB]);
-                            }
+                            output.Add(points[pointA]);
+                            output.Add(points[pointB]);
                         }
                         leftAndRightRotation = 0;
                         colinear = 0;
                     }
                 }
                 for (int size = 0; size < toBeRemovedPoints.Count; size++)
-                {
-                    outPoints.Remove(toBeRemovedPoints[size]);
+                { 
+                    output.Remove(toBeRemovedPoints[size]);
                 }
+                outPoints = output.ToList();
             }
         }
         
