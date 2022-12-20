@@ -36,11 +36,11 @@ namespace CGAlgorithms.Algorithms.ConvexHull
             {
                 if (!currentBestPoint.Equals(points[index]))
                 {
-                    radians = Math.Atan2(currentBestPoint.Y- points[index].Y, currentBestPoint.X-points[index].X);
-                    angle = radians * (180 / Math.PI);
-                    if (angle > largestAngle)
+                    radians = Math.Atan2(points[index].Y - currentBestPoint.Y, points[index].X - currentBestPoint.X);
+                    //angle = radians * (180 / Math.PI);
+                    if (radians > largestAngle)
                     {
-                        largestAngle = angle;
+                        largestAngle = radians;
                         nextBestHullPoint = points[index];
                     }
                 }
