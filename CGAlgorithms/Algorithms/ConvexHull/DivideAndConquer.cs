@@ -11,106 +11,121 @@ namespace CGAlgorithms.Algorithms.ConvexHull
     {
         public override void Run(List<Point> points, List<Line> lines, List<Polygon> polygons, ref List<Point> outPoints, ref List<Line> outLines, ref List<Polygon> outPolygons)
         {
-            outPoints = RunDivideAndConquer(points, lines, polygons, ref outPoints, ref outLines, ref outPolygons);
-        }
-        private List<Point> RunDivideAndConquer(List<Point> points, List<Line> lines, List<Polygon> polygons, ref List<Point> outPoints, ref List<Line> outLines, ref List<Polygon> outPolygons)
-        {
-            points = points.OrderBy(point => point.X).ToList();
-            return Divide(points, lines, polygons, ref outPoints, ref outLines, ref outPolygons);
-        }
-        private List<Point> Divide(List<Point> points, List<Line> lines, List<Polygon> polygons, ref List<Point> outPoints, ref List<Line> outLines, ref List<Polygon> outPolygons)
-        {
-            if (points.Count < 6)
+            CGUtilities.HelperMethods.removeDuplicatePoints(ref points);
+            if (points.Count < 8)
             {
                 var ch = new ExtremeSegments();
-                ch.Run(points, lines, polygons,ref outPoints, ref outLines, ref outPolygons);
-                return outPoints;
+                ch.Run(points, lines, polygons, ref outPoints, ref outLines, ref outPolygons);
+                return;
+            }
+            points = points.OrderBy(point => point.X).ThenBy(point => point.Y).ToList();
+            outPoints = Divide(points);
+        }
+        private List<Point> Divide(List<Point> points)
+        {
+            if (points.Count < 2)
+            {
+                return points;
             }
 
-            int MI = (points.Count / 2) - 1;
-            List<Point> LCH = Divide(points.GetRange(0, MI), lines, polygons, ref outPoints, ref outLines, ref outPolygons);
-            List<Point> RCH = Divide(points.GetRange(MI, points.Count - MI), lines, polygons, ref outPoints, ref outLines, ref outPolygons);
+            int MI = (points.Count / 2);
 
-            return Merge(LCH, RCH);
+            List<Point> left = Divide(points.GetRange(0, MI));
+            List<Point> right = Divide(points.GetRange(MI, points.Count - MI));
+
+            return Merge(left, right);
+        }
+        private Point getNextPoint(Point value, List<Point>points)
+        {
+            return points[(points.IndexOf(value) + 1) % points.Count];
         }
 
-        private List<Point> Merge(List<Point> RCH, List<Point> LCH)
+        private Point getPrevPoint(Point value, List<Point> points)
         {
-            Point MLP = LCH.OrderBy(point => point.X).LastOrDefault(); // Min
-            Point MRP = RCH.OrderBy(point => point.X).FirstOrDefault(); // Max
+            return (points.IndexOf(value) == 0 ? points[points.Count - 1] : points[points.IndexOf(value) - 1]);
+        }
 
-            // Up Supporting Line
-            Point ULP = MLP;
-            Point URP = MRP;
-            Point NextLP = LCH[LCH.IndexOf(ULP) + 1];
-            Point PreRP = RCH[RCH.IndexOf(URP) -1];
-
-            Boolean URPChange, ULPChange;
+        private List<Point> Merge(List<Point> left, List<Point> right)
+        {
+            Point pointOnLeft = left.OrderByDescending(point => point.X).ThenByDescending(point => point.Y).FirstOrDefault();
+            Point pointOnRight = right.OrderBy(point => point.X).ThenBy(point => point.Y).FirstOrDefault();
+            
+            // Up Supporting line
+            Point upOnLeft = pointOnLeft;
+            Point upOnRight = pointOnRight;
+            bool rightChange, leftChange;
 
             do
             {
-                URPChange = ULPChange = false;
-                while (CGUtilities.HelperMethods.CheckTurn(new Line(URP, ULP), NextLP)==Enums.TurnType.Right)
+                rightChange = leftChange = false;
+                while (CGUtilities.HelperMethods.CheckTurn(new Line(upOnRight, upOnLeft), getNextPoint(upOnLeft, left)) == Enums.TurnType.Right)
                 {
-                    ULP = NextLP;
-                    NextLP = LCH[LCH.IndexOf(ULP) + 1];
-                    ULPChange = true;
+                    upOnLeft = getNextPoint(upOnLeft, left);
+                    leftChange = true;
                 }
-                while(CGUtilities.HelperMethods.CheckTurn(new Line(ULP, URP), PreRP) == Enums.TurnType.Left)
+
+                if (!leftChange && CGUtilities.HelperMethods.CheckTurn(new Line(upOnRight, upOnLeft), getNextPoint(upOnLeft, left)) == Enums.TurnType.Colinear)
+                    upOnLeft = getNextPoint(upOnLeft, left);
+
+                while (CGUtilities.HelperMethods.CheckTurn(new Line(upOnLeft, upOnRight), getPrevPoint(upOnRight, right)) == Enums.TurnType.Left)
                 {
-                    URP = PreRP;
-                    PreRP = RCH[RCH.IndexOf(URP) - 1];
-                    URPChange = true;
+                    upOnRight = getPrevPoint(upOnRight, right);
+                    rightChange = true;
                 }
-            } 
-            while (URPChange || ULPChange);
+
+                if (!rightChange && CGUtilities.HelperMethods.CheckTurn(new Line(upOnLeft, upOnRight), getPrevPoint(upOnRight, right)) == Enums.TurnType.Colinear)
+                    upOnRight = getPrevPoint(upOnRight, right);
+            }
+            while (rightChange||leftChange);
 
             // Down Supporting Line
-            Point DLP = MLP;
-            Point DRP = MRP;
-            Point PreLP = LCH[LCH.IndexOf(DLP) - 1];
-            Point NextRP = RCH[RCH.IndexOf(DRP) + 1];
-
-            Boolean DRPChange, DLPChange;
+            Point downOnLeft = pointOnLeft;
+            Point downOnRight = pointOnRight;
             do
             {
-                DRPChange = DLPChange = false;
-                while (CGUtilities.HelperMethods.CheckTurn(new Line(DRP, DLP), PreLP) == Enums.TurnType.Left)
+                rightChange = leftChange = false;
+                while (CGUtilities.HelperMethods.CheckTurn(new Line(downOnRight, downOnLeft), getPrevPoint(downOnLeft, left)) == Enums.TurnType.Left)
                 {
-                    DLP = PreLP;
-                    PreLP = LCH[LCH.IndexOf(DLP) - 1];
-                    DLPChange = true;
+                    downOnLeft = getPrevPoint(downOnLeft, left);
+                    leftChange = true;
                 }
-                while (CGUtilities.HelperMethods.CheckTurn(new Line(DLP, DRP), NextRP) == Enums.TurnType.Right)
+
+                if (!leftChange && CGUtilities.HelperMethods.CheckTurn(new Line(downOnRight, downOnLeft),
+                    getPrevPoint(downOnLeft, left)) == Enums.TurnType.Colinear) downOnLeft = getPrevPoint(downOnLeft, left);
+
+                while (CGUtilities.HelperMethods.CheckTurn(new Line(downOnLeft, downOnRight), getNextPoint(downOnRight, right)) == Enums.TurnType.Right)
                 {
-                    DRP = NextRP;
-                    NextRP = RCH[RCH.IndexOf(DRP) + 1];
-                    DRPChange = true;
+                    downOnRight = getNextPoint(downOnRight, right);
+                    rightChange = true;
                 }
+
+                if (!rightChange && CGUtilities.HelperMethods.CheckTurn(new Line(downOnLeft, downOnRight),
+                    getNextPoint(downOnRight, right)) == Enums.TurnType.Colinear) downOnRight = getNextPoint(downOnRight, right);
             }
-            while (DLPChange || DRPChange);
+            while (leftChange||rightChange);
+
 
             List<Point> ret = new List<Point>();
-            int startIndex = LCH.IndexOf(ULP);
-            int endIndex = LCH.IndexOf(DLP);
 
-            ret.AddRange(LCH.GetRange(startIndex, endIndex - startIndex));
+            Point v = upOnLeft;
+            ret.Add(v);
+            while (!v.Equals(downOnLeft))
+            {
+                v = getNextPoint(v, left);
+                ret.Add(v);
+            }
 
-            startIndex = LCH.IndexOf(DRP);
-            endIndex = LCH.IndexOf(URP);
+            v = downOnRight;
+            ret.Add(v);
+            while (!v.Equals(upOnRight))
+            {
+                v = getNextPoint(v, right);
+                ret.Add(v);
+            }
 
-            ret.AddRange(LCH.GetRange(startIndex, endIndex - startIndex));
-            
             return ret;
         }
-        private Point getFirstLowerPoint(List<Point>points, Point currentPoint)
-        {
-            return points.Where(point => point.Y < currentPoint.Y).FirstOrDefault();
-        }
-        private Point getFirstHigherPoint(List<Point> points, Point currentPoint)
-        {
-            return points.Where(point => point.Y > currentPoint.Y).FirstOrDefault();
-        }
+
         public override string ToString()
         {
             return "Convex Hull - Divide & Conquer";
