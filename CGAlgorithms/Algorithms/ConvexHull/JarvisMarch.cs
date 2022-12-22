@@ -11,7 +11,7 @@ namespace CGAlgorithms.Algorithms.ConvexHull
     {
         public override void Run(List<Point> points, List<Line> lines, List<Polygon> polygons, ref List<Point> outPoints, ref List<Line> outLines, ref List<Polygon> outPolygons)
         {
-            if (points.Count == 1)
+            if (points.Count <= 3)
             {
                 outPoints = points;
                 return;
@@ -34,6 +34,7 @@ namespace CGAlgorithms.Algorithms.ConvexHull
         {
             double angle, radians,largestAngle = double.MinValue;
             Point nextBestHullPoint = null;
+            int removedPoint = -1;
             for (int index = 0; index < points.Count; index++)
             {
                 if (!currentBestPoint.Equals(points[index]))
@@ -43,11 +44,13 @@ namespace CGAlgorithms.Algorithms.ConvexHull
                     if (angle > largestAngle )
                     {
                         largestAngle = angle;
-                        nextBestHullPoint = points[index];
+                        removedPoint = index;
+                        nextBestHullPoint = (Point)points[index].Clone();
                     }
                 }
             }
-            return (Point)nextBestHullPoint.Clone();
+            points.RemoveAt(removedPoint);
+            return nextBestHullPoint;
         }
         private Point getSmallestYPoint(ref List<Point> points)
         {
