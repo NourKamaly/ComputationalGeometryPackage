@@ -27,7 +27,7 @@ namespace CGUtilities
             if (GetVector(ca).Equals(Point.Identity)) return (PointOnSegment(p, ab.Start, ab.End)) ? Enums.PointInPolygon.OnEdge : Enums.PointInPolygon.Outside;
 
             if (CheckTurn(ab, p) == Enums.TurnType.Colinear)
-                return PointOnSegment(p, a, b)? Enums.PointInPolygon.OnEdge : Enums.PointInPolygon.Outside;
+                return PointOnSegment(p, a, b) ? Enums.PointInPolygon.OnEdge : Enums.PointInPolygon.Outside;
             if (CheckTurn(bc, p) == Enums.TurnType.Colinear && PointOnSegment(p, b, c))
                 return PointOnSegment(p, b, c) ? Enums.PointInPolygon.OnEdge : Enums.PointInPolygon.Outside;
             if (CheckTurn(ca, p) == Enums.TurnType.Colinear && PointOnSegment(p, c, a))
@@ -104,11 +104,11 @@ namespace CGUtilities
             }
 
         }
-        public static void removeDuplicatePoints(ref List<Point>inputPoints)
+        public static void removeDuplicatePoints(ref List<Point> inputPoints)
         {
-            for (int pointA = 0 ; pointA < inputPoints.Count; pointA++)
+            for (int pointA = 0; pointA < inputPoints.Count; pointA++)
             {
-                for (int pointB = pointA+1 ; pointB < inputPoints.Count; pointB++)
+                for (int pointB = pointA + 1; pointB < inputPoints.Count; pointB++)
                 {
                     if (inputPoints[pointA].Equals(inputPoints[pointB]))
                     {
@@ -119,7 +119,7 @@ namespace CGUtilities
                 }
             }
         }
-<<<<<<< HEAD
+
 
         public static double AngleBetweenTqoLines(Line firstLine, Line secondLine)
         {
@@ -127,8 +127,7 @@ namespace CGUtilities
             double m2 = Math.Atan2((secondLine.End.Y - secondLine.Start.Y), (secondLine.Start.X - secondLine.End.X));
             return m1 - m2;
         }
-||||||| 9d64b30
-=======
+
         public static Point getSmallestYPoint(ref List<Point> points)
         {
             Point smallestPoint = null;
@@ -147,7 +146,7 @@ namespace CGUtilities
                     {
                         smallestPoint = points[index];
                     }
-                        
+
                 }
             }
             return (Point)smallestPoint.Clone();
@@ -156,6 +155,6 @@ namespace CGUtilities
         {
             return Math.Sqrt(Math.Pow(b.Y - a.Y, 2) + Math.Pow(b.X - a.X, 2));
         }
->>>>>>> origin
+
     }
 }
