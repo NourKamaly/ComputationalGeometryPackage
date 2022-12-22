@@ -27757,7 +27757,7 @@ namespace CGAlgorithmsUnitTest
             inputPoints.Add(new Point(1, 3));
             inputPoints.Add(new Point(2, 1));
             inputPoints.Add(new Point(4, 1));
-            inputPoints.Add(new Point(3, 3));
+            inputPoints.Add(new Point(3, 3)); // interior point
             inputPoints.Add(new Point(3, 6));
             inputPoints.Add(new Point(5, 5));
             inputPoints.Add(new Point(6, 2));
