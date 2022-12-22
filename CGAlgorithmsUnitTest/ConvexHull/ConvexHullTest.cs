@@ -27658,11 +27658,11 @@ namespace CGAlgorithmsUnitTest
             inputPoints.Add(new Point(-50, 50));
             inputPoints.Add(new Point(-50, -100));
 
-            desiredPoints.Add(new Point(-60, 50));
-            desiredPoints.Add(new Point(-100, -100));
+            desiredPoints.Add(new Point(-60, 50)); //in
+            desiredPoints.Add(new Point(-100, -100)); //in
             desiredPoints.Add(new Point(0, -100));
             desiredPoints.Add(new Point(30, -70));
-            desiredPoints.Add(new Point(30, 0));
+            desiredPoints.Add(new Point(30, 0)); //in
             desiredPoints.Add(new Point(-50, 50));
             convexHullTester.Run(inputPoints, inputLines, inputPolygons, ref outputPoints, ref outputLines, ref outputPolygons);
 
@@ -27757,7 +27757,7 @@ namespace CGAlgorithmsUnitTest
             inputPoints.Add(new Point(1, 3));
             inputPoints.Add(new Point(2, 1));
             inputPoints.Add(new Point(4, 1));
-            inputPoints.Add(new Point(3, 3));
+            inputPoints.Add(new Point(3, 3)); // interior point
             inputPoints.Add(new Point(3, 6));
             inputPoints.Add(new Point(5, 5));
             inputPoints.Add(new Point(6, 2));

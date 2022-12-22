@@ -11,56 +11,37 @@ namespace CGAlgorithms.Algorithms.ConvexHull
     {
         public override void Run(List<Point> points, List<Line> lines, List<Polygon> polygons, ref List<Point> outPoints, ref List<Line> outLines, ref List<Polygon> outPolygons)
         {
-            if (points.Count == 1)
+            if (points.Count <= 3)
             {
                 outPoints = points;
                 return;
             }
-           Point currentBestPoint = getSmallestYPoint(ref points);
-           outPoints.Add(currentBestPoint);
+
+            Point smallestPoint = HelperMethods.getSmallestYPoint(ref points);
+            Point currentBestPoint = (Point)smallestPoint.Clone(), potentialNextBestPoint = (Point)points[0].Clone();
+
+
             do
             {
-                Point nextBestHullPoint = getNextBestHullPoint(ref points, currentBestPoint);
-                outPoints.Add(nextBestHullPoint);
-                currentBestPoint = (Point)nextBestHullPoint.Clone();
+                outPoints.Add(currentBestPoint);
 
-            } while(!outPoints.First().Equals(outPoints.Last()));
-            outPoints.RemoveAt(outPoints.Count - 1);
-        }
-        
-        private Point getNextBestHullPoint(ref List<Point> points, Point currentBestPoint)
-        {
-            double angle, radians,largestAngle = double.MinValue;
-            Point nextBestHullPoint = null;
-            for (int index = 0; index < points.Count; index++)
-            {
-                if (!currentBestPoint.Equals(points[index]))
+                for (int index = 0; index < points.Count; index++)
                 {
-                    radians = Math.Atan2(points[index].Y - currentBestPoint.Y, points[index].X - currentBestPoint.X);
-                    //angle = radians * (180 / Math.PI);
-                    if (radians > largestAngle)
+                    Point VectorCurrentPotential = new Point(currentBestPoint.X - potentialNextBestPoint.X, currentBestPoint.Y - potentialNextBestPoint.Y);
+                    Point VectorCurrentNextPotential = new Point(currentBestPoint.X - points[index].X, currentBestPoint.Y - points[index].Y);
+
+                    if (HelperMethods.CheckTurn(VectorCurrentPotential, VectorCurrentNextPotential) == Enums.TurnType.Left || (HelperMethods.CheckTurn(VectorCurrentPotential, VectorCurrentNextPotential) == Enums.TurnType.Colinear && !HelperMethods.PointOnSegment(points[index], currentBestPoint, potentialNextBestPoint)))
                     {
-                        largestAngle = radians;
-                        nextBestHullPoint = points[index];
+                        potentialNextBestPoint = points[index];
                     }
                 }
-            }
-            return (Point)nextBestHullPoint.Clone();
+                currentBestPoint = potentialNextBestPoint;
+
+            } while (!potentialNextBestPoint.Equals(smallestPoint));
+
+
         }
-        private Point getSmallestYPoint(ref List<Point> points)
-        {
-            Point smallestPoint = null;
-            double smallestY = double.MaxValue;
-            for (int index =0; index < points.Count; index++)
-            {
-                if (points[index].Y < smallestY)
-                {
-                    smallestPoint = points[index];
-                    smallestY = points[index].Y;
-                }
-            }
-            return (Point)smallestPoint.Clone();
-        }
+
         public override string ToString()
         {
             return "Convex Hull - Jarvis March";
