@@ -11,16 +11,18 @@ namespace CGAlgorithms.Algorithms.ConvexHull
     {
         public override void Run(List<Point> points, List<Line> lines, List<Polygon> polygons, ref List<Point> outPoints, ref List<Line> outLines, ref List<Polygon> outPolygons)
         {
-            if (points.Count == 1)
+            if (points.Count <= 3)
             {
                 outPoints = points;
                 return;
             }
+
+           //HelperMethods.removeDuplicatePoints(ref outPoints);
            Point currentBestPoint = getSmallestYPoint(ref points);
            outPoints.Add(currentBestPoint);
             do
             {
-                Point nextBestHullPoint = getNextBestHullPoint(ref points, currentBestPoint);
+                Point nextBestHullPoint = getNextBestHullPoint(ref points, currentBestPoint, ref outPoints);
                 outPoints.Add(nextBestHullPoint);
                 currentBestPoint = (Point)nextBestHullPoint.Clone();
 
@@ -28,24 +30,27 @@ namespace CGAlgorithms.Algorithms.ConvexHull
             outPoints.RemoveAt(outPoints.Count - 1);
         }
         
-        private Point getNextBestHullPoint(ref List<Point> points, Point currentBestPoint)
+        private Point getNextBestHullPoint(ref List<Point> points, Point currentBestPoint,ref List<Point> outpoints)
         {
             double angle, radians,largestAngle = double.MinValue;
             Point nextBestHullPoint = null;
+            int removedPoint = -1;
             for (int index = 0; index < points.Count; index++)
             {
                 if (!currentBestPoint.Equals(points[index]))
                 {
                     radians = Math.Atan2(points[index].Y - currentBestPoint.Y, points[index].X - currentBestPoint.X);
-                    //angle = radians * (180 / Math.PI);
-                    if (radians > largestAngle)
+                    angle = radians * 180 / Math.PI;
+                    if (angle > largestAngle )
                     {
-                        largestAngle = radians;
-                        nextBestHullPoint = points[index];
+                        largestAngle = angle;
+                        removedPoint = index;
+                        nextBestHullPoint = (Point)points[index].Clone();
                     }
                 }
             }
-            return (Point)nextBestHullPoint.Clone();
+            points.RemoveAt(removedPoint);
+            return nextBestHullPoint;
         }
         private Point getSmallestYPoint(ref List<Point> points)
         {
@@ -57,6 +62,14 @@ namespace CGAlgorithms.Algorithms.ConvexHull
                 {
                     smallestPoint = points[index];
                     smallestY = points[index].Y;
+                }
+                if (points[index].Y == smallestY)
+                {
+                    if (points[index].X < smallestPoint.X)
+                    {
+                        smallestPoint = points[index];
+                        smallestY = points[index].Y;
+                    }
                 }
             }
             return (Point)smallestPoint.Clone();
