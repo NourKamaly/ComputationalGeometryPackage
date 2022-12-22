@@ -119,5 +119,12 @@ namespace CGUtilities
                 }
             }
         }
+
+        public static double AngleBetweenTqoLines(Line firstLine, Line secondLine)
+        {
+            double m1 = Math.Atan2((firstLine.End.Y - firstLine.Start.Y), (firstLine.Start.X - firstLine.End.X));
+            double m2 = Math.Atan2((secondLine.End.Y - secondLine.Start.Y), (secondLine.Start.X - secondLine.End.X));
+            return m1 - m2;
+        }
     }
 }
