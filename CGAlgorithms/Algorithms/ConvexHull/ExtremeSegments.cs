@@ -14,54 +14,54 @@ namespace CGAlgorithms.Algorithms.ConvexHull
             if (points.Count ==1)
             {
                 outPoints = points;
+                return;
             }
-            else
+            
+            int pointA, pointB, comparedPoint, leftAndRightRotation = 0, colinear=0;
+            HelperMethods.removeDuplicatePoints(ref points);
+            Line ab;
+            List<Point> toBeRemovedPoints = new List<Point>();
+            HashSet<Point> output = new HashSet<Point>();
+            for (pointA = 0; pointA < points.Count; pointA++)
             {
-                int pointA, pointB, comparedPoint, leftAndRightRotation = 0, colinear=0;
-                HelperMethods.removeDuplicatePoints(ref points);
-                Line ab;
-                List<Point> toBeRemovedPoints = new List<Point>();
-                HashSet<Point> output = new HashSet<Point>();
-                for (pointA = 0; pointA < points.Count; pointA++)
+                for (pointB = pointA + 1; pointB < points.Count; pointB++)
                 {
-                    for (pointB = pointA + 1; pointB < points.Count; pointB++)
+                    ab = new Line(points[pointA], points[pointB]);
+                    for (comparedPoint = 0; comparedPoint < points.Count; comparedPoint++)
                     {
-                        ab = new Line(points[pointA], points[pointB]);
-                        for (comparedPoint = 0; comparedPoint < points.Count; comparedPoint++)
+                        if (points[comparedPoint] != points[pointA] && points[comparedPoint] != points[pointB])
                         {
-                            if (points[comparedPoint] != points[pointA] && points[comparedPoint] != points[pointB])
+                            switch (HelperMethods.CheckTurn(ab, points[comparedPoint]))
                             {
-                                switch (HelperMethods.CheckTurn(ab, points[comparedPoint]))
-                                {
-                                    case Enums.TurnType.Left: leftAndRightRotation--; break;
-                                    case Enums.TurnType.Right: leftAndRightRotation++; break;
-                                    default:
-                                        colinear++;
+                                case Enums.TurnType.Left: leftAndRightRotation--; break;
+                                case Enums.TurnType.Right: leftAndRightRotation++; break;
+                                default:
+                                    colinear++;
                                        
-                                        if (HelperMethods.PointOnSegment(points[comparedPoint],points[pointA], points[pointB]))
-                                        {
-                                           toBeRemovedPoints.Add(points[comparedPoint]);
-                                        }
+                                    if (HelperMethods.PointOnSegment(points[comparedPoint],points[pointA], points[pointB]))
+                                    {
+                                        toBeRemovedPoints.Add(points[comparedPoint]);
+                                    }
                                         
-                                        break;
-                                }
+                                    break;
                             }
                         }
-                        if (Math.Abs(leftAndRightRotation) == (points.Count - 2-colinear))
-                        {
-                            output.Add(points[pointA]);
-                            output.Add(points[pointB]);
-                        }
-                        leftAndRightRotation = 0;
-                        colinear = 0;
                     }
+                    if (Math.Abs(leftAndRightRotation) == (points.Count - 2-colinear))
+                    {
+                        output.Add(points[pointA]);
+                        output.Add(points[pointB]);
+                    }
+                    leftAndRightRotation = 0;
+                    colinear = 0;
                 }
-                for (int size = 0; size < toBeRemovedPoints.Count; size++)
-                { 
-                    output.Remove(toBeRemovedPoints[size]);
-                }
-                outPoints = output.ToList();
             }
+            for (int size = 0; size < toBeRemovedPoints.Count; size++)
+            { 
+                output.Remove(toBeRemovedPoints[size]);
+            }
+            outPoints = output.ToList();
+            
         }
         
         public override string ToString()
