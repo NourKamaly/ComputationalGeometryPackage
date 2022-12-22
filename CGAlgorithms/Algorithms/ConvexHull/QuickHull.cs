@@ -69,7 +69,7 @@ namespace CGAlgorithms.Algorithms.ConvexHull
             {
                 if (HelperMethods.CheckTurn(l,globalinput[i])==Enums.TurnType.Right)
                 {
-                    distance = euclideanDistance(ref hull,globalinput[i]) + euclideanDistance(ref hull2, globalinput[i]);
+                    distance = HelperMethods.euclideanDistance(ref hull,globalinput[i]) + HelperMethods.euclideanDistance(ref hull2, globalinput[i]);
                     if (distance> maxDistance)
                     {
                         maxDistance = distance;
@@ -96,10 +96,7 @@ namespace CGAlgorithms.Algorithms.ConvexHull
                 quickHull(nextHullPoint, hull2);
             }
         } 
-        private double euclideanDistance(ref Point a, Point b)
-        {
-            return Math.Sqrt(Math.Pow(b.Y - a.Y, 2)+ Math.Pow(b.X - a.X, 2));
-        }
+      
         private void getSmallestPoints(ref List<Point> points, ref Point north, ref Point south, ref Point east, ref Point west)
         {
             double smallestY = double.MaxValue, smallestX = double.MaxValue, largestY=double.MinValue,largestX=double.MinValue;
@@ -128,10 +125,6 @@ namespace CGAlgorithms.Algorithms.ConvexHull
                 }
             }
            
-        }
-        private double getDistanceBetweenPointAndLine(Point convexHullOne, Point convexHullTwo, Point comparedPoint)
-        {
-            return new double();
         }
         
             public override string ToString()

@@ -119,5 +119,32 @@ namespace CGUtilities
                 }
             }
         }
+        public static Point getSmallestYPoint(ref List<Point> points)
+        {
+            Point smallestPoint = null;
+            double smallestY = double.MaxValue;
+
+            for (int index = 0; index < points.Count; index++)
+            {
+                if (points[index].Y < smallestY)
+                {
+                    smallestY = points[index].Y;
+                    smallestPoint = points[index];
+                }
+                else if (points[index].Y == smallestY)
+                {
+                    if (points[index].X < smallestPoint.X)
+                    {
+                        smallestPoint = points[index];
+                    }
+                        
+                }
+            }
+            return (Point)smallestPoint.Clone();
+        }
+        public static double euclideanDistance(ref Point a, Point b)
+        {
+            return Math.Sqrt(Math.Pow(b.Y - a.Y, 2) + Math.Pow(b.X - a.X, 2));
+        }
     }
 }
