@@ -53,6 +53,7 @@ namespace CGAlgorithms.Algorithms.ConvexHull
             quickHull(east, north);
             quickHull(north, west);
             quickHull(west,south);
+            HelperMethods.removeDuplicatePoints(ref globaloutput);
 
         }
         
@@ -79,7 +80,9 @@ namespace CGAlgorithms.Algorithms.ConvexHull
             }
             if (nextHullPoint != null)
             {
+                
                 globaloutput.Add(nextHullPoint);
+                
                 globalinput.Remove(nextHullPoint);
                 for (int i = 0; i < globalinput.Count; i++)
                 {
